@@ -6,5 +6,5 @@ router = Router()
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.answer("🌟_*Добро пожаловать в Финансового бота!!!*_🌟",
+    await message.answer("🌟*Добро пожаловать в Финансового бота!!!*🌟",
                          parse_mode="Markdown")
