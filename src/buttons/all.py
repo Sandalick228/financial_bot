@@ -1,4 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+import src.db_service.users as user_db
 
 main_kb = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -18,3 +20,12 @@ back_to_main = InlineKeyboardMarkup(
 add_account = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text='Добавить счёт', callback_data='add_an_invoice')]]
 )
+
+
+async def select_currency_kb():
+    currencies = await user_db.get_all_currencies()
+    keyboard = InlineKeyboardBuilder()
+    for currency in currencies:
+        keyboard.row(InlineKeyboardButton(text=currency.name, callback_data=f'select_currency_{currency.id}'))
+    keyboard.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
+    return keyboard.as_markup()
