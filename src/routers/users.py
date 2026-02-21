@@ -28,12 +28,14 @@ async def back_to_main(callback: CallbackQuery):
         parse_mode="Markdown",
     )
 
-
 @router.callback_query(F.data == "my_accounts")
 async def my_accounts(callback: CallbackQuery):
     await callback.answer("")
-    await callback.message.edit_text("Мои счета", reply_markup=add_account)
-
+    accounts = await user_db.get_accounts(callback.from_user.id)
+    account_text = "\n".join(
+        f"{account.name}|{account.amount}{account.currency.name}\n\n" for account in accounts) if accounts else "Нет счетов"
+    await callback.message.edit_text(text=f"📋 *Мои счета:*\n\n{account_text}",
+                                     reply_markup=add_account)
 
 @router.callback_query(F.data == "add_an_invoice")
 async def entry_account_name(callback: CallbackQuery, state: FSMContext):
