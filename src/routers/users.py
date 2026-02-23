@@ -2,9 +2,10 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from aiogram.filters import CommandStart
-import src.states.all as st
+import src.states.users as st
 import src.db_service.users as user_db
-from src.buttons.all import main_kb, add_account, select_currency_kb
+from src.buttons.account_operations import add_account, select_currency_kb
+from src.buttons.profile import main_kb
 
 router = Router()
 
@@ -28,6 +29,7 @@ async def back_to_main(callback: CallbackQuery):
         parse_mode="Markdown",
     )
 
+"""Создание счёта"""
 @router.callback_query(F.data == "my_accounts")
 async def my_accounts(callback: CallbackQuery):
     await callback.answer("")
@@ -55,7 +57,6 @@ async def entry_account_currency(message: Message, state: FSMContext):
 async def entry_account_amount(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     currency_id = int(callback.data.split("_")[-1])
-
     await state.update_data(currency_id=currency_id)
     await callback.message.answer("Введите сумму счёта")
     await state.set_state(st.EntryAccountInKB.entry_account_amount)
