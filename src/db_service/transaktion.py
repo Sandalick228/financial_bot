@@ -46,3 +46,13 @@ async def update_payment_account(tg_id: int, additional_amount: int,payment_acco
         )
         payment_account.amount += additional_amount
         await session.commit()
+
+async def subtract_payment_account(tg_id: int, additional_amount: int,payment_account_id: int):
+    async with async_session() as session:
+        user_id = await session.scalar(select(User.id).where(User.tg_id == tg_id))
+        account_id = await session.scalar(select(PaymentAccount.id).where(PaymentAccount.id == payment_account_id))
+        payment_account = await session.scalar(
+            select(PaymentAccount).where(PaymentAccount.user_id == user_id, PaymentAccount.id == account_id)
+        )
+        payment_account.amount -= additional_amount
+        await session.commit()
