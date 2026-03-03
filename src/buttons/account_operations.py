@@ -16,50 +16,27 @@ async def select_currency_kb():
     keyboard.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
     return keyboard.as_markup()
 
-async def sum_select_category_kb():
+async def  get_category_kb():
     categories = await transaction_db.get_all_categories()
     keyboard = InlineKeyboardBuilder()
     for category in categories:
-        keyboard.row(InlineKeyboardButton(text=category.name, callback_data=f'sum_select_categories_{category.id}'))
+        keyboard.row(InlineKeyboardButton(text=category.name, callback_data=f' get_category_{category.id}'))
     keyboard.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
     return keyboard.as_markup()
 
-async def sum_select_subcategory_kb(category_id):
+async def  get_subcategory_kb(category_id):
     subcategories = await transaction_db.get_subcategories(category_id)
     keyboard = InlineKeyboardBuilder()
     for subcategory in subcategories:
-        keyboard.row(InlineKeyboardButton(text=subcategory.name, callback_data=f'sum_select_subcategories_{subcategory.id}'))
+        keyboard.row(InlineKeyboardButton(text=subcategory.name, callback_data=f' get_subcategory_{subcategory.id}'))
     keyboard.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
     return keyboard.as_markup()
 
-async def sum_keyboard_get_accounts(tg_id):
+async def get_payment_accounts_kb(tg_id):
     payment_accounts = await user_db.get_accounts(tg_id)
     items = InlineKeyboardBuilder()
     for payment_account in payment_accounts:
-        items.row(InlineKeyboardButton(text=payment_account.name, callback_data=f'sum_accounts_get_{payment_account.id}'))
+        items.row(InlineKeyboardButton(text=payment_account.name, callback_data=f'get_payment_accounts_{payment_account.id}'))
     items.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
     return items.as_markup()
 
-async def subtract_select_category_kb():
-    categories = await transaction_db.get_all_categories()
-    keyboard = InlineKeyboardBuilder()
-    for category in categories:
-        keyboard.row(InlineKeyboardButton(text=category.name, callback_data=f'subtract_select_categories_{category.id}'))
-    keyboard.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
-    return keyboard.as_markup()
-
-async def subtract_select_subcategory_kb(category_id):
-    subcategories = await transaction_db.get_subcategories(category_id)
-    keyboard = InlineKeyboardBuilder()
-    for subcategory in subcategories:
-        keyboard.row(InlineKeyboardButton(text=subcategory.name, callback_data=f'subtract_select_subcategories_{subcategory.id}'))
-    keyboard.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
-    return keyboard.as_markup()
-
-async def subtract_keyboard_get_accounts(tg_id):
-    payment_accounts = await user_db.get_accounts(tg_id)
-    items = InlineKeyboardBuilder()
-    for payment_account in payment_accounts:
-        items.row(InlineKeyboardButton(text=payment_account.name, callback_data=f'subtract_accounts_get_{payment_account.id}'))
-    items.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
-    return items.as_markup()

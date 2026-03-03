@@ -1,14 +1,12 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class AdditionAccountInKB(StatesGroup):
-    addition_account_one = State()
-    addition_account_two = State()
-    addition_account_three = State()
-    addition_account_four = State()
+class AdditionAccount(StatesGroup):
+    entering_the_top_up_amount = State()
 
-class SubtractAccountInKB(StatesGroup):
-    subtract_account_one = State()
-    subtract_account_two = State()
-    subtract_account_three = State()
-    subtract_account_four = State()
+
+class SubtractAccount(StatesGroup):
+    entering_the_deduction_amount = State()
+
+
+

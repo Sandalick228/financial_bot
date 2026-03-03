@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 
 from src.database import async_session
@@ -10,18 +10,6 @@ from src.models.users import User
 async def get_all_currencies():
     async with async_session() as session:
         return (await session.scalars(select(Subcategory))).all()
-"""работаю с этим"""
-async def adjunction_accounts():
-    async with async_session() as session:
-        result = await session.scalar(
-            select(Category.id)
-        )
-        account_result = await session.scalars(
-        select(Category)
-        .where(Subcategory.category_id == result)
-        .options(selectinload(Subcategory.sb_category))
-        )
-        return account_result.all()
 
 async def get_all_categories():
     async with async_session() as session:
@@ -36,15 +24,17 @@ async def get_subcategories(category_id):
         )
         return result.all()
 
-
 async def update_payment_account(tg_id: int, additional_amount: int,payment_account_id: int):
     async with async_session() as session:
         user_id = await session.scalar(select(User.id).where(User.tg_id == tg_id))
         account_id = await session.scalar(select(PaymentAccount.id).where(PaymentAccount.id == payment_account_id))
         payment_account = await session.scalar(
-            select(PaymentAccount).where(PaymentAccount.user_id == user_id, PaymentAccount.id == account_id)
+            select(PaymentAccount).where(PaymentAccount.user_id == user_id, account_id)
         )
         payment_account.amount += additional_amount
+        update (await session.execute(
+            update(PaymentAccount).where(PaymentAccount.user_id == user_id, PaymentAccount.id == account_id).values(
+                amount=PaymentAccount.amount - additional_amount)))
         await session.commit()
 
 async def subtract_payment_account(tg_id: int, additional_amount: int,payment_account_id: int):
@@ -55,4 +45,7 @@ async def subtract_payment_account(tg_id: int, additional_amount: int,payment_ac
             select(PaymentAccount).where(PaymentAccount.user_id == user_id, PaymentAccount.id == account_id)
         )
         payment_account.amount -= additional_amount
+        update(await session.execute(
+            update(PaymentAccount).where(PaymentAccount.user_id == user_id, PaymentAccount.id == account_id).values(
+                amount=PaymentAccount.amount - additional_amount)))
         await session.commit()
