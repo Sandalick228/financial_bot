@@ -1,4 +1,4 @@
-from sqlalchemy import select, update, Transaction
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 
 from src.database import async_session
@@ -24,7 +24,7 @@ async def get_subcategories(category_id):
         )
         return result.all()
 
-async def update_payment_account(tg_id: int, additional_amount: int,payment_account_id: int):
+async def add_top_up_transaction(tg_id: int, additional_amount: int,payment_account_id: int):
     async with async_session() as session:
         user_id = await session.scalar(select(User.id).where(User.tg_id == tg_id))
         await session.execute(
@@ -32,11 +32,11 @@ async def update_payment_account(tg_id: int, additional_amount: int,payment_acco
                 amount=PaymentAccount.amount + additional_amount))
         await session.commit()
 
-async def subtract_payment_account(tg_id: int, additional_amount: int,payment_account_id: int, category_id: int, subcategory_id: int):
+async def add_subtract_transaction(tg_id: int, additional_amount: int,payment_account_id: int):
     async with async_session() as session:
         user_id = await session.scalar(select(User.id).where(User.tg_id == tg_id))
         await session.execute(
-            update(Transaction).where(PaymentAccount.user_id == user_id, PaymentAccount.id == payment_account_id,
-                                      category_id=category_id,subcategory_id=subcategory_id ).values(
+            update(PaymentAccount).where(PaymentAccount.user_id == user_id,
+                                         PaymentAccount.id == payment_account_id).values(
                 amount=PaymentAccount.amount - additional_amount))
         await session.commit()
