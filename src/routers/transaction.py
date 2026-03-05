@@ -1,9 +1,9 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-import src.states.transaktion as st
+import src.states.transaction as st
 from src.buttons.account_operations import get_category_kb, get_subcategory_kb, get_payment_accounts_kb
-import src.db_service.transaktion as transaction_db
+import src.db_service.transaction as transaction_db
 
 router = Router()
 """Пополнение"""
@@ -94,12 +94,14 @@ async def select_sum_kb(callback: CallbackQuery, state: FSMContext):
 async def consumption_recorded_successfully(message: Message, state: FSMContext):
     amount = int(message.text)
     data = await state.get_data()
+    category_id = data.get('category_id')
+    subcategory_id = data.get('subcategory_id')
     payment_account_id = data.get('payment_account_id')
     await transaction_db.subtract_payment_account(
         tg_id=message.from_user.id,
-        additional_amount=amount,
-        payment_account_id=payment_account_id
-
-    )
+        additional_amount = amount,
+        payment_account_id = payment_account_id,
+        category_id=category_id,
+        subcategory_id=subcategory_id)
     await message.answer("Успешно!",parse_mode="Markdown")
     await state.clear()

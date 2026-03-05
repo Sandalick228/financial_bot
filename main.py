@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher
 from src.config import TOKEN
 from src.database import async_main
 from src.routers.users import router as users_router
-from src.routers.transaktion import router as transaction_router
+from src.routers.transaction import router as transaction_router
 
 async def main():
     bot = Bot(token=TOKEN)

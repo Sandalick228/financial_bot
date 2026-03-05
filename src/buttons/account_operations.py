@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 import src.db_service.users as user_db
-import src.db_service.transaktion as transaction_db
+import src.db_service.transaction as transaction_db
 
 add_account = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text='Добавить счёт', callback_data='add_an_invoice')]]
