@@ -19,17 +19,15 @@ async def cmd_start(message: Message):
         parse_mode="Markdown",
     )
 
-
 @router.callback_query(F.data == "back_to_main")
 async def back_to_main(callback: CallbackQuery):
     await callback.answer()
-    await callback.answer(
+    await callback.message.edit_text(
         "🌟*Добро пожаловать в Финансового бота!!!*🌟",
         reply_markup=main_kb,
         parse_mode="Markdown",
     )
 
-"""Создание счёта"""
 @router.callback_query(F.data == "my_accounts")
 async def my_accounts(callback: CallbackQuery):
     await callback.answer("")
@@ -39,6 +37,8 @@ async def my_accounts(callback: CallbackQuery):
     await callback.message.edit_text(text=f"📋 *Мои счета:*\n\n{account_text}",
                                      reply_markup=add_account)
 
+
+"""Создание счёта"""
 @router.callback_query(F.data == "add_an_invoice")
 async def entry_account_name(callback: CallbackQuery, state: FSMContext):
     await callback.answer("")
@@ -74,5 +74,11 @@ async def entry_account_ok(message: Message, state: FSMContext):
         amount=amount,
         currency_id=currency_id,
     )
-    await message.answer("✅ Счёт успешно добавлен!", parse_mode="Markdown")
+    accounts = await user_db.get_accounts(message.from_user.id)
+    account_text = "\n".join(
+        f"{account.name}|{account.amount}{account.currency.name}\n\n" for account in accounts) if accounts else "Нет счетов"
+    await message.answer(text=f"✅Счёт успешно добавлен!\n\n📋 *Мои счета:*\n\n{account_text}",
+                                     reply_markup=add_account)
     await state.clear()
+
+
