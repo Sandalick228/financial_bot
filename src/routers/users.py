@@ -42,7 +42,7 @@ async def my_accounts(callback: CallbackQuery):
 @router.callback_query(F.data == "add_an_invoice")
 async def entry_account_name(callback: CallbackQuery, state: FSMContext):
     await callback.answer("")
-    await callback.message.answer("Введите название счёта", parse_mode="Markdown")
+    await callback.message.edit_text("Введите название счёта", parse_mode="Markdown")
     await state.set_state(st.EntryAccountInKB.entry_account_name)
 
 
@@ -50,7 +50,7 @@ async def entry_account_name(callback: CallbackQuery, state: FSMContext):
 async def entry_account_currency(message: Message, state: FSMContext):
     name = message.text
     await state.update_data(name=name)
-    await message.answer("Выберите валюту", reply_markup=await select_currency_kb())
+    await message.edit_text("Выберите валюту", reply_markup=await select_currency_kb())
 
 
 @router.callback_query(F.data.startswith("select_currency_"))
@@ -58,7 +58,7 @@ async def entry_account_amount(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     currency_id = int(callback.data.split("_")[-1])
     await state.update_data(currency_id=currency_id)
-    await callback.message.answer("Введите сумму счёта")
+    await callback.message.edit_text("Введите сумму счёта")
     await state.set_state(st.EntryAccountInKB.entry_account_amount)
 
 
@@ -77,7 +77,7 @@ async def entry_account_ok(message: Message, state: FSMContext):
     accounts = await user_db.get_accounts(message.from_user.id)
     account_text = "\n".join(
         f"{account.name}|{account.amount}{account.currency.name}\n\n" for account in accounts) if accounts else "Нет счетов"
-    await message.answer(text=f"✅Счёт успешно добавлен!\n\n📋 *Мои счета:*\n\n{account_text}",
+    await message.edit_text(text=f"✅Счёт успешно добавлен!\n\n📋 *Мои счета:*\n\n{account_text}",
                                      reply_markup=add_account)
     await state.clear()
 

@@ -12,7 +12,7 @@ router = Router()
 async def get_all_account(callback: CallbackQuery, state: FSMContext):
     await callback.answer("")
     await state.update_data(is_depositing=True)
-    await callback.message.answer("Выберите к какому счёту привязана операция",
+    await callback.message.edit_text("Выберите к какому счёту привязана операция",
                                   reply_markup=await get_payment_accounts_kb(callback.from_user.id),
                                   parse_mode="Markdown")
 
@@ -21,7 +21,7 @@ async def get_categories_kb(callback: CallbackQuery, state: FSMContext):
     payment_account_id = int(callback.data.replace("get_payment_accounts_", ""))
     await state.update_data(payment_account_id=payment_account_id)
     await callback.answer("")
-    await callback.message.answer("Выберите категорию",
+    await callback.message.edit_text("Выберите категорию",
                                   reply_markup=await get_category_kb(),
                                   parse_mode="Markdown")
 
@@ -30,7 +30,7 @@ async def select_subcategories_kb(callback: CallbackQuery, state: FSMContext):
     await callback.answer("")
     category_id = int(callback.data.replace("get_category_", ""))
     await state.update_data(category_id=category_id)
-    await callback.message.answer("Выберите подкатегорию",
+    await callback.message.edit_text("Выберите подкатегорию",
                                   reply_markup=await get_subcategory_kb(category_id),
                                   parse_mode="Markdown")
 
@@ -39,7 +39,7 @@ async def enter_amount_for_depositing(callback: CallbackQuery, state: FSMContext
     await callback.answer("")
     subcategory_id = int(callback.data.replace("get_subcategory_", ""))
     await state.update_data(subcategory_id=subcategory_id)
-    await callback.message.answer("Введите сумму пополнения",
+    await callback.message.edit_text("Введите сумму пополнения",
                                   parse_mode="Markdown")
     await state.set_state(st.AdditionAccount.entering_the_top_up_amount)
 
@@ -49,22 +49,25 @@ async def depositing_account_ok(message: Message, state: FSMContext):
     data = await state.get_data()
     is_depositing = data.get("is_depositing")
     payment_account_id = data.get('payment_account_id')
+    subcategory_id = data.get("subcategory_id")
     if is_depositing:
         await transaction_db.add_top_up_transaction(
             tg_id=message.from_user.id,
             additional_amount=amount,
-            payment_account_id=payment_account_id
+            payment_account_id=payment_account_id,
+            subcategory_id = subcategory_id,
         )
     else:
         await transaction_db.add_subtract_transaction(
             tg_id=message.from_user.id,
             additional_amount=amount,
             payment_account_id=payment_account_id,
+            subcategory_id=subcategory_id,
         )
     accounts = await user_db.get_accounts(message.from_user.id)
     account_text = "\n".join(
         f"{account.name}|{account.amount}{account.currency.name}\n\n" for account in accounts)
-    await message.answer(text=f"✅Транзакция успешно завершена!\n\n📋 *Мои счета:*\n\n{account_text}",parse_mode="Markdown")
+    await message.edit_text(text=f"✅Транзакция успешно завершена!\n\n📋 *Мои счета:*\n\n{account_text}",parse_mode="Markdown")
     await state.clear()
 
 """Вычитание"""
