@@ -37,7 +37,7 @@ async def get_payment_accounts_kb(tg_id):
     payment_accounts = await user_db.get_accounts(tg_id)
     items = InlineKeyboardBuilder()
     for payment_account in payment_accounts:
-        items.row(InlineKeyboardButton(text=payment_account.name + " | " + str(payment_account.amount) + " ₽",
+        items.row(InlineKeyboardButton(text = f"{payment_account.name} | {payment_account.amount} ₽",
                                        callback_data=f"get_payment_accounts_{payment_account.id}"))
     items.row(InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main"))
     return items.as_markup()
