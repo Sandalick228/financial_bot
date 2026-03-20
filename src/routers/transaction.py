@@ -35,7 +35,7 @@ async def select_subcategories_kb(callback: CallbackQuery, state: FSMContext):
                                   parse_mode="Markdown")
 
 @router.callback_query(F.data.startswith("get_subcategory_"))
-async def enter_amount_for_depositing(callback: CallbackQuery, state: FSMContext):
+async def enter_amount(callback: CallbackQuery, state: FSMContext):
     await callback.answer("")
     subcategory_id = int(callback.data.replace("get_subcategory_", ""))
     await state.update_data(subcategory_id=subcategory_id)
@@ -44,7 +44,7 @@ async def enter_amount_for_depositing(callback: CallbackQuery, state: FSMContext
     await state.set_state(st.AdditionAccount.entering_the_top_up_amount)
 
 @router.message(st.AdditionAccount.entering_the_top_up_amount)
-async def depositing_account_ok(message: Message, state: FSMContext):
+async def account_operation_ok(message: Message, state: FSMContext):
     amount = int(message.text)
     data = await state.get_data()
     is_depositing = data.get("is_depositing")
@@ -60,7 +60,7 @@ async def depositing_account_ok(message: Message, state: FSMContext):
     else:
         await transaction_db.add_subtract_transaction(
             tg_id=message.from_user.id,
-            additional_amount=amount,
+            subtract_amount=amount,
             payment_account_id=payment_account_id,
             subcategory_id=subcategory_id,
         )
