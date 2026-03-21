@@ -55,3 +55,13 @@ async def add_subtract_transaction(tg_id: int, subtract_amount: int,payment_acco
         )
         session.add(new_transaction)
         await session.commit()
+
+async def get_statistics(tg_id: int):
+    async with async_session() as session:
+        user_result = await session.scalar(
+            select(User.id).where(User.tg_id == tg_id)
+        )
+        account_result = await session.scalars(
+        select(Transaction).where(Transaction.user_id == user_result)
+        )
+        return account_result.all()

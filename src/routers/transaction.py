@@ -78,3 +78,13 @@ async def get_all_account(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text("Выберите к какому счёту привязана операция",
                                   reply_markup=await get_payment_accounts_kb(callback.from_user.id),
                                   parse_mode="Markdown")
+
+"""Статистика"""
+# @router.callback_query(F.data == "statistics")
+# async def my_statistics(callback: CallbackQuery):
+#     await callback.answer("")
+#     accounts = await transaction_db.get_statistics(callback.from_user.id)
+#     account_text = "\n".join(
+#         f"{account.name}|{account.amount}{account.currency.name}\n\n" for account in accounts) if accounts else "Пока что нету операций по данному счёту"
+#     await callback.message.edit_text(text=f"📋 *Мои счета:*\n\n{account_text}",
+#                                      reply_markup=add_account)
