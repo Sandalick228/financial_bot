@@ -33,6 +33,7 @@ async def add_top_up_transaction(tg_id: int, additional_amount: int,payment_acco
                 amount=PaymentAccount.amount + additional_amount))
         new_transaction = Transaction(
             user_id = user_id,
+            payment_accounts_id=payment_account_id,
             subcategory_id = subcategory_id,
             amount = additional_amount,
             operation_type = True
@@ -49,6 +50,7 @@ async def add_subtract_transaction(tg_id: int, subtract_amount: int,payment_acco
                 amount=PaymentAccount.amount - subtract_amount))
         new_transaction = Transaction(
             user_id = user_id,
+            payment_accounts_id=payment_account_id,
             subcategory_id = subcategory_id,
             amount = subtract_amount,
             operation_type = False
@@ -56,12 +58,3 @@ async def add_subtract_transaction(tg_id: int, subtract_amount: int,payment_acco
         session.add(new_transaction)
         await session.commit()
 
-async def get_statistics(tg_id: int):
-    async with async_session() as session:
-        user_result = await session.scalar(
-            select(User.id).where(User.tg_id == tg_id)
-        )
-        account_result = await session.scalars(
-        select(Transaction).where(Transaction.user_id == user_result)
-        )
-        return account_result.all()

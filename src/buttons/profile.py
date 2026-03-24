@@ -11,8 +11,8 @@ main_kb = InlineKeyboardMarkup(
     ]
 )
 
-back_to_main = InlineKeyboardMarkup(
+back_to_main_kb = InlineKeyboardMarkup(
     inline_keyboard=[
-    [InlineKeyboardButton(text='назад', callback_data='back_to_main')]
+    [InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main')]
     ]
 )

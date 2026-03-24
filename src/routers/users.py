@@ -4,8 +4,8 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.filters import CommandStart
 import src.states.users as st
 import src.db_service.users as user_db
-from src.buttons.account_operations import add_account, select_currency_kb
-from src.buttons.profile import main_kb
+from src.buttons.account_operations import add_account, select_currency_kb,get_payment_accounts_for_statistics_kb
+from src.buttons.profile import main_kb, back_to_main_kb
 
 router = Router()
 
@@ -81,4 +81,54 @@ async def entry_account_ok(message: Message, state: FSMContext):
                                      reply_markup=add_account)
     await state.clear()
 
+"""Статистика"""
+@router.callback_query(F.data == "statistics",)
+async def my_accounts_for_statistics(callback: CallbackQuery):
+    await callback.answer("")
+    await callback.message.edit_text("Выберите по какому счёту хотите узнать статистику",
+                                  reply_markup=await get_payment_accounts_for_statistics_kb(callback.from_user.id),
+                                  parse_mode="Markdown")
+
+@router.callback_query(F.data.startswith("get_payment_accounts_for_statist"))
+async def get_categories_kb(callback: CallbackQuery):
+    payment_account_id = int(callback.data.replace("get_payment_accounts_for_statist_", ""))
+    await callback.answer("")
+    accounts = await user_db.get_statistics(callback.from_user.id, payment_account_id)
+    if accounts:
+        formatted_transactions = []
+        for amount, operation_type, subcategory_name in accounts:
+            operation_text = " Пополнение" if operation_type else " Расход"
+            if not operation_type:
+                formatted_amount = f"-{amount} ₽"
+            else:
+                formatted_amount = f"+{amount} ₽"
+            formatted_transactions.append(
+                f"{operation_text} | {subcategory_name}: {formatted_amount}"
+            )
+        account_text = "\n".join(formatted_transactions)
+    else:
+        account_text = "Пока что нет операций по данному счёту"
+    await callback.message.edit_text(
+        text=f"📋 *Статистика:*\n\n{account_text}",
+        reply_markup=back_to_main_kb,
+        parse_mode="Markdown"
+    )
+
+# @router.callback_query(F.data.startswith("get_payment_accounts_for_statist"))
+# async def get_categories_kb(callback: CallbackQuery):
+#     payment_account_id = int(callback.data.replace("get_payment_accounts_for_statist_", ""))
+#     await callback.answer("")
+#     accounts = await user_db.get_statistics(callback.from_user.id, payment_account_id)
+#     if accounts:
+#         for amount, operation_type, subcategory_name in accounts:
+#             operation_text = " Пополнение" if operation_type else " Расход"
+#             account_text_1 = f"{operation_text} | {subcategory_name}: {amount}"
+#         account_text = account_text_1
+#     else:
+#         account_text = "Пока что нет операций по данному счёту"
+#     await callback.message.edit_text(
+#         text=f"📋 *Статистика:*\n\n{account_text}",
+#         reply_markup=back_to_main_kb,
+#         parse_mode="Markdown"
+#     )
 
