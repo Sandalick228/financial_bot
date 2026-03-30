@@ -1,6 +1,5 @@
 from sqlalchemy import select, insert
 from sqlalchemy.orm import selectinload
-
 from src.database import async_session
 from src.models.categories import Subcategory
 from src.models.payments import PaymentAccount, CurrencyDB
@@ -45,7 +44,7 @@ async def get_accounts(tg_id: int):
 
 async def get_statistics(tg_id: int, payment_account_id: int):
     async with async_session() as session:
-        user_result = await session.scalar(
+        user_id = await session.scalar(
             select(User.id).where(User.tg_id == tg_id)
         )
         result = await session.execute(
@@ -56,23 +55,8 @@ async def get_statistics(tg_id: int, payment_account_id: int):
             ).join(
                 Subcategory, Transaction.subcategory_id == Subcategory.id
             ).where(
-                Transaction.user_id == user_result,
-                Transaction.payment_accounts_id == payment_account_id
+                Transaction.user_id == user_id,
+                Transaction.payment_account_id == payment_account_id
             )
         )
         return result.all()
-# async def get_statistics(tg_id: int, payment_account_id: int):
-#     async with async_session() as session:
-#         user_result = await session.scalar(
-#             select(User.id).where(User.tg_id == tg_id)
-#         )
-#         account_result = await session.scalars(
-#         select(Transaction).where(Transaction.user_id == user_result,
-#                                   Transaction.payment_accounts_id == payment_account_id)
-#         )
-#         return account_result.all()
-
-
-
-
-
