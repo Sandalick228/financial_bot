@@ -1,6 +1,7 @@
 from sqlalchemy import BigInteger, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from src.database import Base
+import datetime
 
 class Transaction(Base):
     __tablename__ = 'transactions'
@@ -10,4 +11,4 @@ class Transaction(Base):
     amount: Mapped[int] = mapped_column(BigInteger, nullable=True)
     subcategory_id: Mapped[int] = mapped_column(ForeignKey("subcategories.id", ondelete="CASCADE"))
     operation_type: Mapped[bool] = mapped_column(default=False)
-    datetime: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    date: Mapped[datetime.date] = mapped_column(default=datetime.date.today)
