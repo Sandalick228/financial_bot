@@ -50,3 +50,27 @@ async def get_payment_accounts_for_statistics_kb(tg_id):
                                        callback_data=f"get_payment_accounts_for_statist_{payment_account.id}"))
     items.row(InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main"))
     return items.as_markup()
+
+menu_statistic = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Общая статистика", callback_data="general_statistics")],
+                     [InlineKeyboardButton(text="Статистика расхода", callback_data="consumption_statistics")],
+                     [InlineKeyboardButton(text="Статистика дохода", callback_data="income_statistics")]]
+)
+
+async def get_payment_accounts_for_consumption_statistics_kb(tg_id):
+    payment_accounts = await user_db.get_accounts(tg_id)
+    items = InlineKeyboardBuilder()
+    for payment_account in payment_accounts:
+        items.row(InlineKeyboardButton(text = f"{payment_account.name} | {payment_account.amount} ₽",
+                                       callback_data=f"get_payment_accounts_for_consumption_statistics_{payment_account.id}"))
+    items.row(InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main"))
+    return items.as_markup()
+
+async def get_payment_accounts_for_income_statistics_kb(tg_id):
+    payment_accounts = await user_db.get_accounts(tg_id)
+    items = InlineKeyboardBuilder()
+    for payment_account in payment_accounts:
+        items.row(InlineKeyboardButton(text = f"{payment_account.name} | {payment_account.amount} ₽",
+                                       callback_data=f"get_payment_accounts_for_income_statistics_{payment_account.id}"))
+    items.row(InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main"))
+    return items.as_markup()
