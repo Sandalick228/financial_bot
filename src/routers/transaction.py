@@ -67,7 +67,7 @@ async def account_operation_ok(message: Message, state: FSMContext):
     accounts = await user_db.get_accounts(message.from_user.id)
     account_text = "\n".join(
         f"{account.name}|{account.amount}{account.currency.name}\n\n" for account in accounts)
-    await message.edit_text(text=f"✅Транзакция успешно завершена!\n\n📋 *Мои счета:*\n\n{account_text}",parse_mode="Markdown")
+    await message.answer(text=f"✅Транзакция успешно завершена!\n\n📋 *Мои счета:*\n\n{account_text}",parse_mode="Markdown")
     await state.clear()
 
 """Вычитание"""
@@ -78,3 +78,4 @@ async def get_all_account(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text("Выберите к какому счёту привязана операция",
                                   reply_markup=await get_payment_accounts_kb(callback.from_user.id),
                                   parse_mode="Markdown")
+

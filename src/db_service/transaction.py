@@ -33,6 +33,7 @@ async def add_top_up_transaction(tg_id: int, additional_amount: int,payment_acco
                 amount=PaymentAccount.amount + additional_amount))
         new_transaction = Transaction(
             user_id = user_id,
+            payment_accounts_id=payment_account_id,
             subcategory_id = subcategory_id,
             amount = additional_amount,
             operation_type = True
@@ -49,9 +50,11 @@ async def add_subtract_transaction(tg_id: int, subtract_amount: int,payment_acco
                 amount=PaymentAccount.amount - subtract_amount))
         new_transaction = Transaction(
             user_id = user_id,
+            payment_accounts_id=payment_account_id,
             subcategory_id = subcategory_id,
             amount = subtract_amount,
             operation_type = False
         )
         session.add(new_transaction)
         await session.commit()
+
