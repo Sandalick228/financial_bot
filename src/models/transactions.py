@@ -5,7 +5,7 @@ from src.database import Base
 class Transaction(Base):
     __tablename__ = 'transactions'
     id: Mapped[int] = mapped_column(primary_key=True)
-    payment_account_id: Mapped[int] = mapped_column(ForeignKey("payment_accounts.id"), nullable=True)
+    payment_account_id: Mapped[int] = mapped_column(ForeignKey("payment_accounts.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     amount: Mapped[int] = mapped_column(BigInteger, nullable=True)
     subcategory_id: Mapped[int] = mapped_column(ForeignKey("subcategories.id", ondelete="CASCADE"))
