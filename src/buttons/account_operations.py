@@ -8,13 +8,11 @@ add_account = InlineKeyboardMarkup(
                      [InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main")]]
 )
 
-
 async def select_currency_kb():
     currencies = await user_db.get_all_currencies()
     keyboard = InlineKeyboardBuilder()
     for currency in currencies:
         keyboard.row(InlineKeyboardButton(text=currency.name, callback_data=f'select_currency_{currency.id}'))
-    keyboard.row(InlineKeyboardButton(text='◀️ Назад', callback_data='back_to_main'))
     return keyboard.as_markup()
 
 async def get_category_kb():
@@ -38,11 +36,11 @@ async def get_payment_accounts_kb(tg_id):
     items = InlineKeyboardBuilder()
     for payment_account in payment_accounts:
         items.row(InlineKeyboardButton(text = f"{payment_account.name} | {payment_account.amount} ₽",
-                                       callback_data=f"get_payment_accounts_{payment_account.id}"))
+                                       callback_data=f"get_payment_accounts_replenishing_{payment_account.id}"))
     items.row(InlineKeyboardButton(text="◀️ Назад", callback_data="back_to_main"))
     return items.as_markup()
 
-async def get_payment_accounts_for_statistics_kb(tg_id):
+async def get_payment_accounts_for_all_statistics_kb(tg_id):
     payment_accounts = await user_db.get_accounts(tg_id)
     items = InlineKeyboardBuilder()
     for payment_account in payment_accounts:

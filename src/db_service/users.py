@@ -50,7 +50,8 @@ async def get_statistics(tg_id: int, payment_account_id: int):
             select(
                 Transaction.amount,
                 Transaction.operation_type,
-                Subcategory.name.label('subcategory_name')
+                Subcategory.name.label('subcategory_name'),
+                Transaction.date.label('date'),
             ).join(
                 Subcategory, Transaction.subcategory_id == Subcategory.id
             ).where(
