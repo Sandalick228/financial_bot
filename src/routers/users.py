@@ -113,23 +113,23 @@ async def get_categories_kb(callback: CallbackQuery):
     )
 
 @router.callback_query(F.data == "consumption_statistics",)
-async def my_accounts_for_statistics(callback: CallbackQuery):
+async def my_accounts_for_consumption_statistics(callback: CallbackQuery):
     await callback.answer("")
     await callback.message.edit_text("Выберите по какому счёту хотите узнать статистику",
                                   reply_markup=await get_payment_accounts_for_consumption_statistics_kb(callback.from_user.id),
                                   parse_mode="Markdown")
 
 @router.callback_query(F.data.startswith("get_payment_accounts_for_consumption_statistics"))
-async def get_categories_kb(callback: CallbackQuery):
+async def get_categories_kb_consumption(callback: CallbackQuery):
     payment_account_id = int(callback.data.replace("get_payment_accounts_for_consumption_statistics_", ""))
     await callback.answer("")
     accounts = await user_db.get_statistics_consumption(callback.from_user.id, payment_account_id)
     formatted_transactions = []
-    for amount, operation_type, subcategory_name in accounts:
+    for amount, operation_type, subcategory_name, date in accounts:
         operation_text = "Расход"
         formatted_amount = f"-{amount} ₽"
         formatted_transactions.append(
-            f"{operation_text} | {subcategory_name}: {formatted_amount}"
+            f" {date} | {operation_text} : {formatted_amount} ({subcategory_name})"
         )
     account_text = "\n".join(formatted_transactions) if accounts else "Пока что не происходило расходов на данном счёте"
     await callback.message.edit_text(
@@ -139,23 +139,23 @@ async def get_categories_kb(callback: CallbackQuery):
     )
 
 @router.callback_query(F.data == "income_statistics",)
-async def my_accounts_for_statistics(callback: CallbackQuery):
+async def my_accounts_for_income_statistics(callback: CallbackQuery):
     await callback.answer("")
     await callback.message.edit_text("Выберите по какому счёту хотите узнать статистику",
                                   reply_markup=await get_payment_accounts_for_income_statistics_kb(callback.from_user.id),
                                   parse_mode="Markdown")
 
 @router.callback_query(F.data.startswith("get_payment_accounts_for_income_statistics"))
-async def get_categories_kb(callback: CallbackQuery):
+async def get_categories_kb_for_income(callback: CallbackQuery):
     payment_account_id = int(callback.data.replace("get_payment_accounts_for_income_statistics_", ""))
     await callback.answer("")
     accounts = await user_db.get_statistics_income(callback.from_user.id, payment_account_id)
     formatted_transactions = []
-    for amount, operation_type, subcategory_name in accounts:
+    for amount, operation_type, subcategory_name, date in accounts:
         operation_text = "Доход"
         formatted_amount = f"+{amount} ₽"
         formatted_transactions.append(
-            f"{operation_text} | {subcategory_name}: {formatted_amount}"
+            f" {date} | {operation_text} : {formatted_amount} ({subcategory_name})"
         )
     account_text = "\n".join(formatted_transactions) if accounts else "Пока что не происходило пополнений на данном счёте"
     await callback.message.edit_text(
