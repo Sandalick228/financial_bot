@@ -41,7 +41,6 @@ async def get_accounts(tg_id: int):
         )
         return account_result.all()
 
-
 async def get_statistics(tg_id: int, payment_account_id: int):
     async with async_session() as session:
         user_id = await session.scalar(
@@ -51,12 +50,55 @@ async def get_statistics(tg_id: int, payment_account_id: int):
             select(
                 Transaction.amount,
                 Transaction.operation_type,
-                Subcategory.name.label('subcategory_name')
+                Subcategory.name.label('subcategory_name'),
+                Transaction.date.label('date')
             ).join(
                 Subcategory, Transaction.subcategory_id == Subcategory.id
             ).where(
                 Transaction.user_id == user_id,
                 Transaction.payment_account_id == payment_account_id
-            )
+            ).order_by(Transaction.date.desc())
+        )
+        return result.all()
+
+async def get_statistics_consumption(tg_id: int, payment_account_id: int):
+    async with async_session() as session:
+        user_id = await session.scalar(
+            select(User.id).where(User.tg_id == tg_id)
+        )
+        result = await session.execute(
+            select(
+                Transaction.amount,
+                Transaction.operation_type,
+                Subcategory.name.label('subcategory_name'),
+                Transaction.date.label('date')
+            ).join(
+                Subcategory, Transaction.subcategory_id == Subcategory.id
+            ).where(
+                Transaction.user_id == user_id,
+                Transaction.payment_account_id == payment_account_id,
+                Transaction.operation_type == False
+            ).order_by(Transaction.date.desc())
+        )
+        return result.all()
+
+async def get_statistics_income(tg_id: int, payment_account_id: int):
+    async with async_session() as session:
+        user_id = await session.scalar(
+            select(User.id).where(User.tg_id == tg_id)
+        )
+        result = await session.execute(
+            select(
+                Transaction.amount,
+                Transaction.operation_type,
+                Subcategory.name.label('subcategory_name'),
+                Transaction.date.label('date')
+            ).join(
+                Subcategory, Transaction.subcategory_id == Subcategory.id
+            ).where(
+                Transaction.user_id == user_id,
+                Transaction.payment_account_id == payment_account_id,
+                Transaction.operation_type == True
+            ).order_by(Transaction.date.desc())
         )
         return result.all()
